@@ -6,7 +6,7 @@ export default () => (
     <Button
       type='primary'
       onClick={() => {
-        Router.push('/newGame');
+        Router.push('/create');
       }}
       block
     >

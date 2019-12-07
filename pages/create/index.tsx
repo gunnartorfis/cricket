@@ -10,7 +10,7 @@ enum Progress {
   ParticipantsName
 }
 
-const NewGame = () => {
+const Create = () => {
   const [progress, setProgress] = useState<Progress>(Progress.Settings);
   const numberOfParticipants = useRef<number>(0);
   const lowestBeforeBull = useRef<number>(0);
@@ -46,4 +46,4 @@ const NewGame = () => {
   );
 };
 
-export default NewGame;
+export default Create;

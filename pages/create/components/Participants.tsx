@@ -52,7 +52,7 @@ const Participants = ({ numberOfParticipants, lowestBeforeBull, onClickPrevious,
           onClick={() => {
             updateParticipants(participants);
             setTimeout(() => {
-              Router.push('/cricket');
+              Router.push('/play');
             }, 2000);
           }}
           block
