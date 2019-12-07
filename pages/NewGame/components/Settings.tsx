@@ -1,4 +1,4 @@
-import { Button, Form, InputNumber } from 'antd';
+import { Button, Form, Radio } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { useState } from 'react';
 
@@ -11,38 +11,51 @@ const Settings = ({ disabled, onClickForward }: ISettings) => {
   const [participants, setParticipants] = useState(2);
   const [lowestBeforeBull, setLowestBeforeBull] = useState(15);
 
+  const participantsOptions = [];
+  for (let i = 2; i <= 4; i++) {
+    participantsOptions.push(i);
+  }
+
+  const lowestBeforeBullOptions = [];
+  for (let i = 10; i <= 15; i++) {
+    lowestBeforeBullOptions.push(i);
+  }
+
   return (
     <Form layout='horizontal'>
       <FormItem label='Participants' labelCol={{ span: 8 }} wrapperCol={{ span: 8 }}>
-        <InputNumber
+        <Radio.Group
           disabled={disabled}
-          size='large'
-          min={2}
-          max={10}
-          style={{ width: 100 }}
-          value={participants}
-          onChange={(newValue = 2) => {
-            setParticipants(newValue);
+          onChange={e => {
+            setParticipants(e.target.value);
           }}
-          name='inputNumber'
-        />
+          value={participants}
+        >
+          {participantsOptions.map(o => (
+            <Radio.Button value={o} key={o}>
+              {o}
+            </Radio.Button>
+          ))}
+        </Radio.Group>
       </FormItem>
       <FormItem label='Lowest number before bull' labelCol={{ span: 8 }} wrapperCol={{ span: 8 }}>
-        <InputNumber
+        <Radio.Group
           disabled={disabled}
-          size='large'
-          min={1}
-          max={20}
-          style={{ width: 100 }}
-          value={lowestBeforeBull}
-          onChange={(newValue = 15) => {
-            setLowestBeforeBull(newValue);
+          onChange={e => {
+            setLowestBeforeBull(e.target.value);
           }}
-          name='inputNumber'
-        />
+          value={lowestBeforeBull}
+        >
+          {lowestBeforeBullOptions.map(o => (
+            <Radio.Button value={o} key={o}>
+              {o}
+            </Radio.Button>
+          ))}
+        </Radio.Group>
       </FormItem>
       <FormItem>
         <Button
+          disabled={disabled}
           type='primary'
           onClick={() => {
             onClickForward({
@@ -50,6 +63,7 @@ const Settings = ({ disabled, onClickForward }: ISettings) => {
               lowestBeforeBull
             });
           }}
+          block
         >
           Next
         </Button>

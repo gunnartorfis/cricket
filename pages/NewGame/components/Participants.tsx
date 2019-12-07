@@ -1,16 +1,21 @@
-import { Form, Input, Button } from 'antd';
+import { Button, Form, Input } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import Router from 'next/router';
 import { IParticipant } from '../../../types/Participant';
 import generateParticipants from '../generateParticipants';
+import { updateParticipants } from '../../../store';
 
 interface IParticipants {
   numberOfParticipants: number;
   lowestBeforeBull: number;
-  onClickForward: (participants: IParticipant[]) => void;
+  onClickPrevious: () => void;
+  updateParticipants: Function;
 }
 
-const Participants = ({ numberOfParticipants, lowestBeforeBull, onClickForward }: IParticipants) => {
+const Participants = ({ numberOfParticipants, lowestBeforeBull, onClickPrevious, updateParticipants }: IParticipants) => {
   const [participants, setParticipants] = useState<IParticipant[]>([]);
 
   useEffect(() => {
@@ -28,7 +33,7 @@ const Participants = ({ numberOfParticipants, lowestBeforeBull, onClickForward }
         <FormItem key={p._id} label={`Participant #${p._id}`} labelCol={{ span: 8 }} wrapperCol={{ span: 8 }}>
           <Input
             size='large'
-            style={{ width: 100 }}
+            style={{ width: 200 }}
             value={p.name}
             onChange={e => {
               const currentParticipants = Array.from(participants);
@@ -45,14 +50,23 @@ const Participants = ({ numberOfParticipants, lowestBeforeBull, onClickForward }
         <Button
           type='primary'
           onClick={() => {
-            onClickForward(participants);
+            updateParticipants(participants);
+            setTimeout(() => {
+              Router.push('/cricket');
+            }, 2000);
           }}
+          block
         >
           Create Game
+        </Button>
+        <Button type='default' onClick={onClickPrevious} block>
+          Previous
         </Button>
       </FormItem>
     </Form>
   );
 };
 
-export default Participants;
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({ updateParticipants }, dispatch);
+
+export default connect(null, mapDispatchToProps)(Participants);
