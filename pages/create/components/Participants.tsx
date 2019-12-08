@@ -51,9 +51,7 @@ const Participants = ({ numberOfParticipants, lowestBeforeBull, onClickPrevious,
           type='primary'
           onClick={() => {
             updateParticipants(participants);
-            setTimeout(() => {
-              Router.push('/play');
-            }, 2000);
+            Router.push('/play');
           }}
           block
         >

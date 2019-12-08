@@ -1,22 +1,57 @@
-import { Typography, Row, Col } from 'antd';
-import React from 'react';
+import { Typography, Col, Row, Button } from 'antd';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { updateParticipants } from '../../store';
-import { IParticipant } from '../../types/Participant';
+import { IParticipant, CricketProgress } from '../../types/Participant';
 import Text from 'antd/lib/typography/Text';
-// import Column from 'antd/lib/table/Column';
+import { resetParticipantsScore } from '../create/generateParticipants';
 
 const { Title } = Typography;
 
 interface ICricket {
   participants: IParticipant[];
+  updateParticipants: Function;
 }
 
-const Cricket = ({ participants }: ICricket) => {
+const Cricket = ({ participants, updateParticipants }: ICricket) => {
   if (!participants || participants.length === 0) {
     return null;
   }
+
+  const [turn, setTurn] = useState(0);
+  const [winner, setWinner] = useState<IParticipant>();
+
+  const restart = () => {
+    updateParticipants(resetParticipantsScore({ participants }));
+    setTurn(0);
+    setWinner(undefined);
+  };
+
+  const onTurnEnd = (score: number) => {
+    const participantToUpdate = participants[turn];
+
+    const currentTarget = participantToUpdate.progress.find(p => p.count < 3) as CricketProgress;
+    const progressCopy = [...participantToUpdate.progress];
+    progressCopy[progressCopy.indexOf(currentTarget)] = {
+      number: progressCopy[progressCopy.indexOf(currentTarget)].number,
+      count: progressCopy[progressCopy.indexOf(currentTarget)].count + score
+    };
+
+    participantToUpdate.progress = progressCopy;
+
+    const participantsCopy = [...participants];
+    participantsCopy[turn] = participantToUpdate;
+    updateParticipants(participantsCopy);
+
+    const bullScore = participantToUpdate.progress.find(p => p.number === 'Bull') as CricketProgress;
+
+    if (bullScore.count >= 3) {
+      setWinner(participantToUpdate);
+    } else {
+      setTurn(turn === participants.length - 1 ? 0 : turn + 1);
+    }
+  };
 
   const numbers = participants[0].progress.map(p => p.number);
   const progressColumnIndex = Math.ceil(participants.length / 2);
@@ -32,23 +67,83 @@ const Cricket = ({ participants }: ICricket) => {
     }
   }
   columns.push(participants.slice(-1)[0].progress.map(p => p.count));
+  const rows = transpose(columns);
 
-  columns = transpose(columns);
+  const participantNamesHeader: any = [];
+  for (let i = 0, j = 0; i < participants.length; j++) {
+    const span = Math.floor(24 / rows[0].length);
+    if (i === progressColumnIndex) {
+      participantNamesHeader.push(
+        <Col span={span} key={i}>
+          <Text> </Text>
+        </Col>
+      );
+    }
+    participantNamesHeader.push(
+      <Col span={span} key={`${i} ${participants[i]._id}`}>
+        <div style={{ display: 'flex' }}>
+          <Text
+            style={{
+              textAlign: i === progressColumnIndex ? 'left' : i < progressColumnIndex ? 'right' : 'left',
+              width: '100%',
+              flex: 1,
+              color: turn === i ? 'green' : 'black'
+            }}
+          >
+            {participants[i].name}
+          </Text>
+        </div>
+      </Col>
+    );
+    i++;
+  }
 
   return (
-    <div style={{ marginTop: 100 }}>
+    <div>
       <Title style={{ width: '100%', textAlign: 'center' }}>Cricket</Title>
-      <Row justify='center' align='middle'>
-        {columns.map((column: any[]) => {
-          return column.map((value, index2) => (
-            <Col span={24 / column.length} key={index2}>
-              <div style={{ display: 'flex' }}>
-                <Text style={{ textAlign: 'center', width: '100%' }}>{value}</Text>
-              </div>
-            </Col>
-          ));
-        })}
-      </Row>
+      <div>
+        <Row gutter={16}>{participantNamesHeader}</Row>
+      </div>
+      {rows.map((row: any[], nRow) => {
+        return (
+          <Row justify='center' align='middle' key={nRow}>
+            {row.map((colValue, nCol) => (
+              <Col className='gutter-row' span={Math.floor(24 / row.length)} key={nCol}>
+                <div
+                  style={{
+                    display: 'flex'
+                    // backgroundColor: 'blue'
+                  }}
+                >
+                  <Text
+                    style={{
+                      // backgroundColor: 'green',
+                      textAlign: nCol === progressColumnIndex ? 'center' : nCol < progressColumnIndex ? 'right' : 'left',
+                      width: '100%',
+                      flex: 1
+                    }}
+                  >
+                    {colValue}
+                  </Text>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        );
+      })}
+      {winner ? (
+        <>
+          <Text>Winner: {winner.name}</Text>
+          <Button onClick={restart}>Restart</Button>
+        </>
+      ) : (
+        <>
+          <Button onClick={() => onTurnEnd(0)}>0</Button>
+          <Button onClick={() => onTurnEnd(1)}>1</Button>
+          <Button onClick={() => onTurnEnd(2)}>2</Button>
+          <Button onClick={() => onTurnEnd(3)}>3</Button>
+        </>
+      )}
     </div>
   );
 };

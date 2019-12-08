@@ -13,9 +13,6 @@ export const actionTypes = {
 
 // REDUCERS
 export const reducer = (state = exampleInitialState, action) => {
-  console.log({
-    action
-  });
   switch (action.type) {
     case actionTypes.UPDATE_PARTICIPANTS:
       return Object.assign({}, state, {
@@ -28,7 +25,6 @@ export const reducer = (state = exampleInitialState, action) => {
 
 // ACTIONS
 export const updateParticipants = participants => {
-  console.log('AAAAAAA', participants);
   return { type: actionTypes.UPDATE_PARTICIPANTS, participants };
 };
 
