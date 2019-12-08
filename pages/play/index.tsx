@@ -119,8 +119,8 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
     i++;
   }
 
-  const isActionNumberDisabled = (number: string) => {
-    if (number === '20') {
+  const isActionNumberDisabled = (number: string): boolean => {
+    if (!number || number === '20') {
       return false;
     }
 
@@ -134,7 +134,10 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
       currentParticipantProgressAboveNumber = currentParticipantProgressAbove.count;
     }
 
-    return (currentNumberSelectionAbove === undefined ? 0 : currentNumberSelectionAbove) + currentParticipantProgressAboveNumber < 3;
+    return (
+      isActionNumberDisabled(actionAbove) ||
+      (currentNumberSelectionAbove === undefined ? 0 : currentNumberSelectionAbove) + currentParticipantProgressAboveNumber < 3
+    );
   };
 
   const getActionableNumbers = () =>
