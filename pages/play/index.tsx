@@ -5,9 +5,10 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { updateParticipants } from '../../store';
 import { IParticipant, CricketProgress } from '../../types/Participant';
 import Text from 'antd/lib/typography/Text';
-import { resetParticipantsScore } from '../create/generateParticipants';
+import { resetParticipantsScore } from '../index/generateParticipants';
 
 const { Title } = Typography;
+const ButtonGroup = Button.Group;
 
 interface ICricket {
   participants: IParticipant[];
@@ -99,7 +100,7 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
   }
 
   return (
-    <div>
+    <div style={{ marginTop: 100 }}>
       <Title style={{ width: '100%', textAlign: 'center' }}>Cricket</Title>
       <div>
         <Row gutter={16}>{participantNamesHeader}</Row>
@@ -108,7 +109,7 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
         return (
           <Row justify='center' align='middle' key={nRow}>
             {row.map((colValue, nCol) => (
-              <Col className='gutter-row' span={Math.floor(24 / row.length)} key={nCol}>
+              <Col span={Math.floor(24 / row.length)} key={nCol}>
                 <div
                   style={{
                     display: 'flex'
@@ -131,19 +132,23 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
           </Row>
         );
       })}
-      {winner ? (
-        <>
-          <Text>Winner: {winner.name}</Text>
-          <Button onClick={restart}>Restart</Button>
-        </>
-      ) : (
-        <>
-          <Button onClick={() => onTurnEnd(0)}>0</Button>
-          <Button onClick={() => onTurnEnd(1)}>1</Button>
-          <Button onClick={() => onTurnEnd(2)}>2</Button>
-          <Button onClick={() => onTurnEnd(3)}>3</Button>
-        </>
-      )}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
+        {winner ? (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Text>Winner: {winner.name}</Text>
+            <Button style={{ marginTop: 16 }} type='primary' onClick={restart}>
+              Restart
+            </Button>
+          </div>
+        ) : (
+          <ButtonGroup>
+            <Button onClick={() => onTurnEnd(0)}>0</Button>
+            <Button onClick={() => onTurnEnd(1)}>1</Button>
+            <Button onClick={() => onTurnEnd(2)}>2</Button>
+            <Button onClick={() => onTurnEnd(3)}>3</Button>
+          </ButtonGroup>
+        )}
+      </div>
     </div>
   );
 };
