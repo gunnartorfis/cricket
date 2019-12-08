@@ -46,9 +46,11 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
     // const currentTarget = participantToUpdate.progress.find(p => p.count < 3) as CricketProgress;
     Object.keys(numberSelection).forEach(number => {
       const count = numberSelection[number];
-      participantToUpdate.progress[
-        participantToUpdate.progress.indexOf(participantToUpdate.progress.find(p => p.number === number) as CricketProgress)
-      ].count += count;
+      if (!isActionNumberDisabled(number)) {
+        participantToUpdate.progress[
+          participantToUpdate.progress.indexOf(participantToUpdate.progress.find(p => p.number === number) as CricketProgress)
+        ].count += count;
+      }
     });
 
     // participantToUpdate.progress[participantToUpdate.progress.indexOf(currentTarget)].count += score;
