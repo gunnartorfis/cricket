@@ -1,4 +1,4 @@
-import { Typography, Col, Row, Button, Layout } from 'antd';
+import { Typography, Col, Row, Button, Layout, Radio } from 'antd';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -8,7 +8,6 @@ import Text from 'antd/lib/typography/Text';
 import { resetParticipantsScore } from '../index/generateParticipants';
 
 const { Title } = Typography;
-const ButtonGroup = Button.Group;
 const { Footer, Content } = Layout;
 
 interface ICricket {
@@ -23,18 +22,36 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
 
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<IParticipant>();
+  const [numberSelection, setNumberSelection] = useState<{ [key: string]: number }>({});
 
   const restart = () => {
     updateParticipants(resetParticipantsScore({ participants }));
     setTurn(0);
     setWinner(undefined);
+    setNumberSelection({});
   };
 
-  const onTurnEnd = (score: number) => {
+  const onCountSelected = (count: any, action: string) => {
+    const newActionValue = parseInt(count);
+
+    setNumberSelection({
+      ...numberSelection,
+      [action]: newActionValue
+    });
+  };
+
+  const onEndTurn = () => {
     const participantToUpdate = participants[turn];
 
-    const currentTarget = participantToUpdate.progress.find(p => p.count < 3) as CricketProgress;
-    participantToUpdate.progress[participantToUpdate.progress.indexOf(currentTarget)].count += score;
+    // const currentTarget = participantToUpdate.progress.find(p => p.count < 3) as CricketProgress;
+    Object.keys(numberSelection).forEach(number => {
+      const count = numberSelection[number];
+      participantToUpdate.progress[
+        participantToUpdate.progress.indexOf(participantToUpdate.progress.find(p => p.number === number) as CricketProgress)
+      ].count = count;
+    });
+
+    // participantToUpdate.progress[participantToUpdate.progress.indexOf(currentTarget)].count += score;
 
     const participantsCopy = [...participants];
     participantsCopy[turn] = participantToUpdate;
@@ -46,6 +63,7 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
       setWinner(participantToUpdate);
     } else {
       setTurn(turn === participants.length - 1 ? 0 : turn + 1);
+      setNumberSelection({});
     }
   };
 
@@ -101,6 +119,30 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
     i++;
   }
 
+  const isActionNumberDisabled = (number: string) => {
+    if (number === '20') {
+      return false;
+    }
+
+    const actionableNumbers = getActionableNumbers();
+
+    const actionAbove = actionableNumbers[actionableNumbers.indexOf(number) - 1];
+    const currentNumberSelectionAbove = actionAbove === undefined ? 3 : numberSelection[actionAbove];
+    const currentParticipantProgressAbove = participants[turn].progress.find(p => p.number === actionAbove) as CricketProgress;
+    let currentParticipantProgressAboveNumber = 0;
+    if (currentParticipantProgressAbove) {
+      currentParticipantProgressAboveNumber = currentParticipantProgressAbove.count;
+    }
+
+    return (currentNumberSelectionAbove === undefined ? 0 : currentNumberSelectionAbove) + currentParticipantProgressAboveNumber < 3;
+  };
+
+  const getActionableNumbers = () =>
+    participants[turn].progress
+      .filter(p => p.count < 3)
+      .slice(0, 3)
+      .map(p => p.number);
+
   return (
     <Layout>
       <Content style={{ marginTop: 100 }}>
@@ -119,12 +161,10 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
                     <div
                       style={{
                         display: 'flex'
-                        // backgroundColor: 'blue'
                       }}
                     >
                       <Text
                         style={{
-                          // backgroundColor: 'green',
                           textAlign: nCol === progressColumnIndex ? 'center' : nCol < progressColumnIndex ? 'right' : 'left',
                           width: '100%',
                           flex: 1
@@ -150,14 +190,35 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
               </Button>
             </div>
           ) : (
-            <>
-              <ButtonGroup>
-                <Button onClick={() => onTurnEnd(0)}>0</Button>
-                <Button onClick={() => onTurnEnd(1)}>1</Button>
-                <Button onClick={() => onTurnEnd(2)}>2</Button>
-                <Button onClick={() => onTurnEnd(3)}>3</Button>
-              </ButtonGroup>
-            </>
+            <Row>
+              <Row type='flex' justify='center'>
+                <Text>{participants[turn].name}</Text>
+              </Row>
+              {getActionableNumbers().map(action => {
+                return (
+                  <Row key={action} style={{ marginTop: 8 }} type='flex' justify='center' gutter={8}>
+                    <Col>
+                      <Text>{action}</Text>
+                    </Col>
+                    <Col>
+                      <Radio.Group
+                        disabled={isActionNumberDisabled(action)}
+                        value={numberSelection[action]}
+                        onChange={e => onCountSelected(e.target.value, action)}
+                      >
+                        <Radio.Button value={0}>0</Radio.Button>
+                        <Radio.Button value={1}>1</Radio.Button>
+                        <Radio.Button value={2}>2</Radio.Button>
+                        <Radio.Button value={3}>3</Radio.Button>
+                      </Radio.Group>
+                    </Col>
+                  </Row>
+                );
+              })}
+              <Row type='flex' justify='center' style={{ marginTop: 8 }}>
+                <Button onClick={onEndTurn}>End turn</Button>
+              </Row>
+            </Row>
           )}
         </div>
       </Footer>
