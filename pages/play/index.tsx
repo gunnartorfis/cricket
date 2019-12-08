@@ -48,7 +48,7 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
       const count = numberSelection[number];
       participantToUpdate.progress[
         participantToUpdate.progress.indexOf(participantToUpdate.progress.find(p => p.number === number) as CricketProgress)
-      ].count = count;
+      ].count += count;
     });
 
     // participantToUpdate.progress[participantToUpdate.progress.indexOf(currentTarget)].count += score;
