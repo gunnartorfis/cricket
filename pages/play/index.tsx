@@ -148,7 +148,7 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
 
   return (
     <Layout>
-      <Content style={{ marginTop: 100 }}>
+      <Content style={{ marginTop: 20 }}>
         <Title style={{ width: '100%', textAlign: 'center' }}>Cricket</Title>
         {rows.map((row: any[], nRow) => {
           return (

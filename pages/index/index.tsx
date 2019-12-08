@@ -16,7 +16,7 @@ const Create = () => {
   const lowestBeforeBull = useRef<number>(0);
 
   return (
-    <div style={{ marginTop: 100, paddingRight: '10%', paddingLeft: '10%' }}>
+    <div style={{ marginTop: 20, paddingRight: '10%', paddingLeft: '10%' }}>
       <Steps current={progress - 1} size='small' style={{ marginBottom: 40 }}>
         <Step title='Settings' description='Number of participants and lowest before bull' />
         <Step title='Participants' description='Information about participants' />
