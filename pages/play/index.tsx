@@ -1,4 +1,4 @@
-import { Typography, Col, Row, Button } from 'antd';
+import { Typography, Col, Row, Button, Layout } from 'antd';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -9,6 +9,7 @@ import { resetParticipantsScore } from '../index/generateParticipants';
 
 const { Title } = Typography;
 const ButtonGroup = Button.Group;
+const { Footer, Content } = Layout;
 
 interface ICricket {
   participants: IParticipant[];
@@ -33,13 +34,7 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
     const participantToUpdate = participants[turn];
 
     const currentTarget = participantToUpdate.progress.find(p => p.count < 3) as CricketProgress;
-    const progressCopy = [...participantToUpdate.progress];
-    progressCopy[progressCopy.indexOf(currentTarget)] = {
-      number: progressCopy[progressCopy.indexOf(currentTarget)].number,
-      count: progressCopy[progressCopy.indexOf(currentTarget)].count + score
-    };
-
-    participantToUpdate.progress = progressCopy;
+    participantToUpdate.progress[participantToUpdate.progress.indexOf(currentTarget)].count += score;
 
     const participantsCopy = [...participants];
     participantsCopy[turn] = participantToUpdate;
@@ -59,15 +54,22 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
   let columns = [];
 
   for (let i = 0; i < participants.length; i++) {
+    const participantValue = participants[i].progress.map(p => p.count);
     if (i === progressColumnIndex) {
       // Numbers
       columns.push(numbers);
+      columns.push(participantValue);
+      i++;
     } else {
       // Progress
-      columns.push(participants[i].progress.map(p => p.count));
+      columns.push(participantValue);
     }
   }
-  columns.push(participants.slice(-1)[0].progress.map(p => p.count));
+
+  if (participants.length > 3) {
+    columns.push(participants.slice(-1)[0].progress.map(p => p.count));
+  }
+
   const rows = transpose(columns);
 
   const participantNamesHeader: any = [];
@@ -100,56 +102,66 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
   }
 
   return (
-    <div style={{ marginTop: 100 }}>
-      <Title style={{ width: '100%', textAlign: 'center' }}>Cricket</Title>
-      <div>
-        <Row gutter={16}>{participantNamesHeader}</Row>
-      </div>
-      {rows.map((row: any[], nRow) => {
-        return (
-          <Row justify='center' align='middle' key={nRow}>
-            {row.map((colValue, nCol) => (
-              <Col span={Math.floor(24 / row.length)} key={nCol}>
-                <div
-                  style={{
-                    display: 'flex'
-                    // backgroundColor: 'blue'
-                  }}
-                >
-                  <Text
-                    style={{
-                      // backgroundColor: 'green',
-                      textAlign: nCol === progressColumnIndex ? 'center' : nCol < progressColumnIndex ? 'right' : 'left',
-                      width: '100%',
-                      flex: 1
-                    }}
-                  >
-                    {colValue}
-                  </Text>
-                </div>
-              </Col>
-            ))}
-          </Row>
-        );
-      })}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
-        {winner ? (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Text>Winner: {winner.name}</Text>
-            <Button style={{ marginTop: 16 }} type='primary' onClick={restart}>
-              Restart
-            </Button>
-          </div>
-        ) : (
-          <ButtonGroup>
-            <Button onClick={() => onTurnEnd(0)}>0</Button>
-            <Button onClick={() => onTurnEnd(1)}>1</Button>
-            <Button onClick={() => onTurnEnd(2)}>2</Button>
-            <Button onClick={() => onTurnEnd(3)}>3</Button>
-          </ButtonGroup>
-        )}
-      </div>
-    </div>
+    <Layout>
+      <Content style={{ marginTop: 100 }}>
+        <Title style={{ width: '100%', textAlign: 'center' }}>Cricket</Title>
+        {rows.map((row: any[], nRow) => {
+          return (
+            <div style={{}} key={`${nRow} container`}>
+              {nRow === 0 && (
+                <Row type='flex' justify='center'>
+                  {participantNamesHeader}
+                </Row>
+              )}
+              <Row key={nRow} type='flex' justify='center'>
+                {row.map((colValue, nCol) => (
+                  <Col span={Math.floor(24 / row.length)} key={nCol}>
+                    <div
+                      style={{
+                        display: 'flex'
+                        // backgroundColor: 'blue'
+                      }}
+                    >
+                      <Text
+                        style={{
+                          // backgroundColor: 'green',
+                          textAlign: nCol === progressColumnIndex ? 'center' : nCol < progressColumnIndex ? 'right' : 'left',
+                          width: '100%',
+                          flex: 1
+                        }}
+                      >
+                        {colValue}
+                      </Text>
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          );
+        })}
+      </Content>
+      <Footer>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+          {winner ? (
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Text>Winner: {winner.name}</Text>
+              <Button style={{ marginTop: 16 }} type='primary' onClick={restart}>
+                Restart
+              </Button>
+            </div>
+          ) : (
+            <>
+              <ButtonGroup>
+                <Button onClick={() => onTurnEnd(0)}>0</Button>
+                <Button onClick={() => onTurnEnd(1)}>1</Button>
+                <Button onClick={() => onTurnEnd(2)}>2</Button>
+                <Button onClick={() => onTurnEnd(3)}>3</Button>
+              </ButtonGroup>
+            </>
+          )}
+        </div>
+      </Footer>
+    </Layout>
   );
 };
 
