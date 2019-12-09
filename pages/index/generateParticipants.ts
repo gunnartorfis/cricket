@@ -24,7 +24,8 @@ const generateParticipants = ({ numberOfParticipants, lowestBeforeBull }: IGener
     initialParticipants.push({
       _id: `${i}`,
       name: '',
-      progress
+      progress,
+      missCount: 0
     });
   }
 

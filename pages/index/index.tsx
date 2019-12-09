@@ -1,9 +1,7 @@
-import { Col, Row, Steps } from 'antd';
+import { Col, Row } from 'antd';
 import React, { useRef, useState } from 'react';
 import Participants from './components/Participants';
 import Settings from './components/Settings';
-
-const { Step } = Steps;
 
 enum Progress {
   Settings = 1,
@@ -17,10 +15,6 @@ const Create = () => {
 
   return (
     <div style={{ marginTop: 20, paddingRight: '10%', paddingLeft: '10%' }}>
-      <Steps current={progress - 1} size='small' style={{ marginBottom: 40 }}>
-        <Step title='Settings' description='Number of participants and lowest before bull' />
-        <Step title='Participants' description='Information about participants' />
-      </Steps>
       <Row>
         <Col span={12} offset={6}>
           {progress === Progress.Settings && (
