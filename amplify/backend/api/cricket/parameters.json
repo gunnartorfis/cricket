@@ -1,0 +1,11 @@
+{
+    "AppSyncApiName": "cricket",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": "false",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authcricket43eb95c4",
+            "Outputs.UserPoolId"
+        ]
+    }
+}

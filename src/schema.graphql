@@ -1,0 +1,13 @@
+type Game @model {
+  id: ID!
+  participants: [Participant]
+}
+type Participant {
+  name: String!
+  missCount: Int!
+  progress: [UserProgress]!
+}
+type UserProgress {
+  number: String!
+  count: Int!
+}

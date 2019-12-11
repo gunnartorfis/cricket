@@ -1,0 +1,22 @@
+{
+    "production": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-cricket-production-225010-authRole",
+            "UnauthRoleArn": "arn:aws:iam::994672886123:role/amplify-cricket-production-225010-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::994672886123:role/amplify-cricket-production-225010-authRole",
+            "Region": "eu-west-1",
+            "DeploymentBucketName": "amplify-cricket-production-225010-deployment",
+            "UnauthRoleName": "amplify-cricket-production-225010-unauthRole",
+            "StackName": "amplify-cricket-production-225010",
+            "StackId": "arn:aws:cloudformation:eu-west-1:994672886123:stack/amplify-cricket-production-225010/978da380-1c68-11ea-a099-026ecba91d00",
+            "AmplifyAppId": "da3sklrha32i8"
+        },
+        "categories": {
+            "auth": {
+                "cricket43eb95c4": {
+                    "hostedUIProviderCreds": "[]"
+                }
+            }
+        }
+    }
+}

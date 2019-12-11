@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import { Router } from '@reach/router';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import Amplify, { Auth } from 'aws-amplify';
+import { withAuthenticator } from 'aws-amplify-react';
+import awsconfig from './aws-exports';
 
+import Create from './pages/create';
+import Play from './pages/play';
+import configureStore from './reduxStore';
+
+Amplify.configure(awsconfig);
 function App() {
+  const { persistor, store } = configureStore();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <div className='App'>
+          <Router>
+            <Create path='/' />
+            <Play path='play' />
+          </Router>
+        </div>
+      </PersistGate>
+    </Provider>
   );
 }
 
-export default App;
+export default withAuthenticator(App);
