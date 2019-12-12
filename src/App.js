@@ -3,7 +3,7 @@ import React from 'react';
 import { Router } from '@reach/router';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import Amplify, { Auth } from 'aws-amplify';
+import Amplify from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
 import awsconfig from './aws-exports';
 
