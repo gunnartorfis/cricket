@@ -1,74 +1,91 @@
-import { Button, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Radio } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
 import { navigate } from '@reach/router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
+import { updateParticipants } from '../../../reducers';
 import { IParticipant } from '../../../types/Participant';
 import generateParticipants from '../generateParticipants';
-import { updateParticipants } from '../../../reducers';
 
 interface IParticipants {
   numberOfParticipants: number;
   lowestBeforeBull: number;
-  onClickPrevious: () => void;
   updateParticipants: Function;
 }
 
-const Participants = ({
-  numberOfParticipants,
-  lowestBeforeBull,
-  onClickPrevious,
-  updateParticipants
-}: IParticipants) => {
-  const [participants, setParticipants] = useState<IParticipant[]>([]);
+const fixedParticipants: Partial<IParticipant>[] = [
+  { name: 'Gunnar' },
+  { name: 'Jón' },
+  { name: 'Kjartan' },
+  { name: 'Óskar' }
+];
 
-  useEffect(() => {
-    setParticipants(
-      generateParticipants({
-        numberOfParticipants,
-        lowestBeforeBull
-      })
-    );
-  }, [numberOfParticipants]);
+const Participants = ({ updateParticipants }: IParticipants) => {
+  const [checkedValues, setCheckedValues] = useState<boolean[]>(
+    fixedParticipants.map(() => false)
+  );
+  const [lowestBeforeBull, setLowestBeforeBull] = useState(15);
+
+  const lowestBeforeBullOptions = [];
+  for (let i = 10; i <= 15; i++) {
+    lowestBeforeBullOptions.push(i);
+  }
+
+  const updateCheckedValuesForIndex = (index: number) => {
+    setCheckedValues(checkedValues.map((c, i) => (i === index ? !c : c)));
+  };
 
   return (
     <Form layout='horizontal'>
-      {participants.map((p, i) => (
-        <FormItem
-          key={i}
-          label={`Participant #${i}`}
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 8 }}
+      <FormItem
+        label='Lowest number before bull'
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 8 }}
+      >
+        <Radio.Group
+          buttonStyle='solid'
+          onChange={e => {
+            setLowestBeforeBull(e.target.value);
+          }}
+          value={lowestBeforeBull}
         >
-          <Input
-            size='large'
-            style={{ width: 200 }}
-            value={p.name}
-            onChange={e => {
-              const currentParticipants = Array.from(participants);
-              currentParticipants[i] = {
-                ...currentParticipants[i],
-                name: e.target.value
-              };
-              setParticipants(currentParticipants);
-            }}
-          />
-        </FormItem>
+          {lowestBeforeBullOptions.map(o => (
+            <Radio.Button value={o} key={o}>
+              {o}
+            </Radio.Button>
+          ))}
+        </Radio.Group>
+      </FormItem>
+      {fixedParticipants.map(({ name }, i) => (
+        <Checkbox
+          key={i}
+          onChange={() => {
+            updateCheckedValuesForIndex(i);
+          }}
+        >
+          {name}
+        </Checkbox>
       ))}
       <FormItem>
         <Button
+          disabled={checkedValues.find(c => !c)}
           type='primary'
           onClick={() => {
+            const participanting = fixedParticipants.filter(
+              (_, index) => checkedValues[index]
+            );
+            const participants = generateParticipants({
+              numberOfParticipants: participanting.length,
+              lowestBeforeBull,
+              names: participanting.map(p => p.name || '')
+            });
             updateParticipants(participants);
             navigate('/play');
           }}
           block
         >
           Create Game
-        </Button>
-        <Button type='default' onClick={onClickPrevious} block>
-          Previous
         </Button>
       </FormItem>
     </Form>

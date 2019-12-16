@@ -3,11 +3,13 @@ import { IParticipant } from '../../types/Participant';
 interface IGenerateParticipants {
   numberOfParticipants: number;
   lowestBeforeBull: number;
+  names?: string[];
 }
 
 const generateParticipants = ({
   numberOfParticipants,
-  lowestBeforeBull
+  lowestBeforeBull,
+  names
 }: IGenerateParticipants) => {
   const initialParticipants: IParticipant[] = [];
 
@@ -25,7 +27,7 @@ const generateParticipants = ({
     });
 
     initialParticipants.push({
-      name: '',
+      name: names && names?.length >= i ? names[i - 1] : '',
       progress,
       missCount: 0
     });

@@ -31,12 +31,14 @@ const CricketFooter = ({
   onEndTurn,
   rounds
 }: ICricketFooter) => {
+  const round = rounds > 0 ? rounds + 1 : 0;
   return (
     <Footer>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         {winner ? (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Text>Winner: {winner.name}</Text>
+            <Text>Round: {round}</Text>
             <Button style={{ marginTop: 16 }} type='primary' onClick={onClickRestart}>
               Restart
             </Button>
@@ -52,7 +54,7 @@ const CricketFooter = ({
               </Button>
             </Row>
             <Row type='flex' justify='center' style={{ marginTop: 8 }}>
-              <Text>Rounds: {rounds}</Text>
+              <Text>Round: {round}</Text>
             </Row>
 
             {actionableNumbers.map((action: string) => (

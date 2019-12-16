@@ -9,7 +9,7 @@ enum Progress {
 }
 
 const Create = () => {
-  const [progress, setProgress] = useState<Progress>(Progress.Settings);
+  const [progress, setProgress] = useState<Progress>(Progress.ParticipantsName);
   const numberOfParticipants = useRef<number>(0);
   const lowestBeforeBull = useRef<number>(0);
 
@@ -31,7 +31,7 @@ const Create = () => {
             <Participants
               numberOfParticipants={numberOfParticipants.current}
               lowestBeforeBull={lowestBeforeBull.current}
-              onClickPrevious={() => setProgress(Progress.Settings)}
+              // onClickPrevious={() => setProgress(Progress.Settings)}
             />
           )}
         </Col>

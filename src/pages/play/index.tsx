@@ -180,6 +180,7 @@ const Cricket = ({ participants, updateParticipants }: ICricket) => {
 
   if (!participants || participants.length === 0) {
     navigate('/');
+    return null;
   }
 
   return (
